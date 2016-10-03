@@ -1,0 +1,27 @@
+#!/bin/bash --login
+
+#LSF job options (name, compute nodes, job time)
+#BSUB -J sharpen
+# The minimum (default) job size on SCARF is slots where 1 slot equals 1 core, not 1 host and is specified by -n
+# the -x option allocates exclusive access to the hosts used for the job there will be no other jobs running at the same time as yours
+# The -R "span[ptile=1]" option allocates one host per slot
+# With MPI we can span nodes so don't need to be so careful about where slots get allocated (so the job can start faster)
+# But the sharpen executable runs 1 thread per core per rank, so we should distribute it
+# If your individual process communicate a lot then it is still advantageous to ensure that they are grouped together on hosts as much as possible
+# Excluding other users from "your" hosts with -x is an easy way to do that (but there are some caveats as reservations can reduce the number of available slots on a host)
+#BSUB -n 8
+#BSUB -x -R "span[ptile=1]"
+#BSUB -W 01:00
+###PBS -A y14  # No equivalent on SCARF
+
+#BSUB -o sharpen.o%J
+#BSUB -e sharpen.e%J
+
+# Change to the directory that the job was submitted from
+# (remember this should be on the /work filesystem)
+# LSF will automatically start in the same directory it was submitted from, if this is not under your home area the environment variable 
+# below will be set to that directory
+#cd $LS_SUBCWD
+
+# The -lsf flag is used with Platform MPI, the default on SCARF to get parameters from LSF
+mpirun -lsf ./sharpen
