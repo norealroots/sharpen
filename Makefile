@@ -1,11 +1,11 @@
 MF=	Makefile
 
 #COMPILER
-CC=	mpicc
+CC=	cc
 # On ARCHER, cc is a wrapper for whichever C compiler - GNU (gcc), Intel (icc), or Cray (craycc) - has been chosen by loading the appropriate PrgEnv module prior to compilation.
 
-CFLAGS=	-g -DC_MPI_PRACTICAL
-LFLAGS=	-lm
+CFLAGS=	-g -DC_SERIAL_PRACTICAL
+LFLAGS=	-lm -lgomp
 
 EXE=	sharpen
 
@@ -29,7 +29,7 @@ INC = \
 
 OBJ=	$(SRC:.c=.o)
 
-.c.o:
+.c.o:	
 	$(CC) $(CFLAGS) -c $<
 
 all:	$(EXE)
